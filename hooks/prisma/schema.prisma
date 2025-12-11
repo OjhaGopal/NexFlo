@@ -11,4 +11,39 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
+model User {
+  
+  id Int @default autoincrement()
+  name String
+  email String @unique
+  password String
+
+}
+
+model nexflo {
+
+  id String @id @default(uuid())
+  triggerId String
+  trigger Trigger?
+
+}
+
+model Trigger {
+
+  id String @id @default(uuid())
+  nexfloId String @unique
+  triggerId String
+  type AvalableTriggers @relation(fields: [nexfloId], references: [id])
+  nexflo nexflo  @relation(fields: [nexfloId], references: [id])
+}
+
+model AvalableTriggers {
+
+  id String @id @default(uuid())
+  name String
+  trigger Trigger[]
+}
+
