@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -16,34 +16,75 @@ datasource db {
 
 model User {
   
-  id Int @default autoincrement()
-  name String
-  email String @unique
-  password String
+  id         Int @default (autoincrement())
+  name       String
+  email      String @unique
+  password   String
 
 }
 
 model nexflo {
 
-  id String @id @default(uuid())
-  triggerId String
-  trigger Trigger?
-
+  id         String @id @default(uuid())
+  triggerId  String
+  trigger    Trigger?
+  actions    action[]
+  nexflorun  nexflorun[]
 }
 
 model Trigger {
 
-  id String @id @default(uuid())
-  nexfloId String @unique
-  triggerId String
-  type AvalableTriggers @relation(fields: [nexfloId], references: [id])
-  nexflo nexflo  @relation(fields: [nexfloId], references: [id])
+  id         String @id @default(uuid())
+  nexfloId   String @unique
+  triggerId  String
+  type       AvalableTrigger @relation(fields: [triggerId], references: [id])
+  nexflo     nexflo  @relation(fields: [nexfloId], references: [id])
 }
 
-model AvalableTriggers {
 
-  id String @id @default(uuid())
-  name String
-  trigger Trigger[]
+
+model action{
+
+  id         String @id @default(uuid())
+  nexfloId   String
+  nexflo     nexflo @relation(fields: [nexfloId], references: [id])
+  actionId   String
+  type       AvalableAction @relation(fields: [actionId], references: [id])
+
 }
 
+model AvalableAction {
+
+  id         String @id @default(uuid())
+  name       String
+  actions    action[]
+}
+
+
+model AvalableTrigger {
+
+  id       String @id @default(uuid())
+  name     String
+  trigger  Trigger[]
+}
+
+model nexflorun {
+  id            String @id @default(uuid())
+  nexflowId     String
+  nexflo        nexflo @relation(fields: [nexflowId], references: [id])
+  nexflowoutbox nexflowoutbox?
+  metadata      Json
+}
+
+model nexflowoutbox{
+  id            String @id @default(uuid())
+  nexflowrunId  String @unique
+  nexflowrun    nexflorun @relation(fields: [nexflowrunId], references: [id])
+}
+
+
+
+
+
+//मुक्कमल ज़िंदगी गैरों पर कुर्बान कर आए 
+//पर आईने में खड़े शख़्स को कभी दोस्त न बना पाए.
